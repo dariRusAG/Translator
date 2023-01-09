@@ -42,7 +42,7 @@ public class LexAnalyzer {
     private String input;
     private final ArrayList<Pair> output;
 
-    // конструктор создания класса с указанием названия считываемого файла
+    // процедура установки входного файла
     private void setInput(String fileName) {
         try ( FileReader fr = new FileReader(fileName);  Scanner scan = new Scanner(fr)) {
             this.input = "";
@@ -55,18 +55,20 @@ public class LexAnalyzer {
         }
     }
 
+    // конструктор создания класса с указанием названия считываемого файла
     LexAnalyzer(String fileName) {
         this.output = new ArrayList();
         setInput(fileName);
     }
 
-    // метод формирования списка лексем из считываемого файла
+    // метод формирования списка лексем из считываемого файла с помощью if-чиков
     public void makeAnalysis() throws Exception {
         String lexema = new String();
         int i = 0;
         int numOfString = 1;
         while (i < this.input.length()) {
             lexema += this.input.charAt(i);
+
             if (lexema.charAt(0) == '\'') {
                 i++;
                 while (this.input.charAt(i) != '\'') {
@@ -74,21 +76,25 @@ public class LexAnalyzer {
                     i++;
                 }
                 lexema += this.input.charAt(i);
-                if (lexema.length() != 3) { // строка
+                if (lexema.length() != 3) {
+                    // строка
                     Pair lex = new Pair("string", lexema, numOfString);
                     this.output.add(lex);
-                } else { // символ
+                } else {
+                    // символ
                     Pair lex = new Pair("char", lexema, numOfString);
                     this.output.add(lex);
                 }
                 lexema = "";
             }
+
             // скобка
             if (find(this.bracket, lexema)) {
                 Pair lex = new Pair("bracket", lexema, numOfString);
                 this.output.add(lex);
                 lexema = "";
             }
+
             if (find(this.separator, lexema)) {
                 //присваивание
                 if (lexema.charAt(0) == ':' && this.input.charAt(i + 1) == '=') {
@@ -104,6 +110,7 @@ public class LexAnalyzer {
                     lexema = "";
                 }
             }
+
             if (find(this.operator, lexema)) {
                 //присваивание
                 if (this.input.charAt(i + 1) == '=') {
@@ -126,6 +133,7 @@ public class LexAnalyzer {
                     }
                 }
             }
+
             //сравнение
             if (find(this.compare, lexema)) {
                 if ((this.input.charAt(i + 1) == '=' && lexema.charAt(0) != '=') || (lexema.charAt(0) == '<' && this.input.charAt(i + 1) == '>')) {
@@ -140,6 +148,7 @@ public class LexAnalyzer {
                     lexema = "";
                 }
             }
+
             //числа
             if (find(this.num, lexema)) {
                 String nextChar = new String();
@@ -170,6 +179,7 @@ public class LexAnalyzer {
                     lexema = "";
                 }
             }
+
             if (find(this.charPascal, lexema)) {
                 String nextChar = new String();
                 nextChar += this.input.charAt(i + 1);
@@ -190,13 +200,16 @@ public class LexAnalyzer {
                     lexema = "";
                 }
             }
+
             if (lexema.length() == 1 && lexema.charAt(0) == ' ') {
                 lexema = "";
             }
+
             if (lexema.length() == 1 && lexema.charAt(0) == '$') {
                 numOfString++;
                 lexema = "";
             }
+
             if (lexema.length() == 1) {
                 throw new Exception("Недопустимый символ грамматики \'"
                         + lexema.charAt(0)
@@ -207,6 +220,7 @@ public class LexAnalyzer {
         }
     }
 
+    // функция, проверяющая наличие единицы алфавита Паскаль в строке
     private boolean find(String[] sourse, String sample) {
         boolean isFind = false;
         for (String atom : sourse) {
@@ -216,7 +230,8 @@ public class LexAnalyzer {
         }
         return isFind;
     }
-    // метод вывода списа лексем на экран
+
+    // метод вывода списка лексем на экран
     public void print() throws UnsupportedEncodingException {
 
         PrintStream ps = new PrintStream(System.out, false, "utf-8");
@@ -231,3 +246,4 @@ public class LexAnalyzer {
         return this.output;
     }
 }
+
