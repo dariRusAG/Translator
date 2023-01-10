@@ -8,6 +8,13 @@ public class Pair {
     private String name;
     private int numString;
 
+    // конструктор класса лексемы, принимающий на вход тип и имя строки лексемы
+    Pair(String type, String name) {
+        this.type = type;
+        this.name = name;
+        this.numString = 0;
+    }
+
     // конструктор класса лексемы, принимающий на вход тип, имя и номер строки лексемы
     Pair(String type, String name, int numString) {
         this.type = type;
