@@ -493,4 +493,22 @@ public class PascalGrammar implements GrammarInterface {
             ps.println();
         }
     }
+
+//    Возвращает аксиому грамматики
+    @Override
+    public Pair getAxiom() {
+        return this.axiom;
+    }
+
+//    Возвращает правила граматики по левой части
+    @Override
+    public ArrayList<GrammarRule> getRules(Pair left) {
+        ArrayList<GrammarRule> result = new ArrayList();
+        for (int i = 0; i < this.rules.size(); i++) {
+            if (left.equals(this.rules.get(i).getLeft())) {
+                result.add(this.rules.get(i));
+            }
+        }
+        return result;
+    }
 }

@@ -74,4 +74,28 @@ public class GrammarRule {
     public Pair getPair(int pos) {
         return this.right.get(pos);
     }
+
+//    возвращает копию правила с символом $ в позиции pos
+    public GrammarRule getRuleWithDot(int pos) {
+        ArrayList<Pair> rightWithDot = new ArrayList();
+        for (int i = 0; i < pos; i++) {
+            rightWithDot.add(this.getPair(i));
+        }
+        rightWithDot.add(this.dot);
+        for (int i = pos; i < this.right.size(); i++) {
+            rightWithDot.add(this.getPair(i));
+        }
+        return new GrammarRule(this.left, rightWithDot);
+    }
+
+//    Возврат копии объекта Rule
+    public GrammarRule copy() {
+        Pair left = this.left.copy();
+        ArrayList<Pair> right = new ArrayList();
+        for (int i = 0; i < this.right.size(); i++) {
+            Pair current = this.right.get(i).copy();
+            right.add(current);
+        }
+        return new GrammarRule(left, right);
+    }
 }

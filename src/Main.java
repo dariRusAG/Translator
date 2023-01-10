@@ -12,6 +12,8 @@ public class Main {
 //            pascalLexAnal.print();
             PascalGrammar pascalGrammar = new PascalGrammar(new Pair("nterm","программа"));
             pascalGrammar.print();
+            SynAnalyzer pascalSynAnal = new SynAnalyzer(pascalLexAnal.getListLexem(), pascalGrammar);
+//            pascalSynAnal.makeTable();
         } catch (Exception e) {
             ps.print(e.getMessage());
         }
