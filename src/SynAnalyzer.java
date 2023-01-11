@@ -29,17 +29,13 @@ public class SynAnalyzer {
         ArrayList<GrammarRule> axiomRules = this.grammar.getRules(this.grammar.getAxiom());
         addDefaultRules(ceil0, axiomRules, step);
         boolean wasAdding = true;
-        int currentIndexNterm = 0;
         while (wasAdding) {
             ArrayList<Situation> situationWithDotInEnd = this.getSituationWithDotInEnd(ceil0);
             for (int i = 0; i < situationWithDotInEnd.size(); i++) {
                 Pair left = situationWithDotInEnd.get(i).getRule().getLeft();
                 this.addSituationWithDotAtFrontOf(ceil0, left, step);
             }
-            ArrayList<Situation> situationWithDotAtFrontOfNterm = this.getSituationWithDotAtFrontOfNterm(ceil0, currentIndexNterm);
-            if (!situationWithDotAtFrontOfNterm.isEmpty()) {
-                currentIndexNterm += ceil0.size();
-            }
+            ArrayList<Situation> situationWithDotAtFrontOfNterm = this.getSituationWithDotAtFrontOfNterm(ceil0);
             for (int i = 0; i < situationWithDotAtFrontOfNterm.size(); i++) {
                 int posDot = situationWithDotAtFrontOfNterm.get(i).getRule().getPosSymbol(this.dot);
                 Pair Nterm = situationWithDotAtFrontOfNterm.get(i).getRule().getPair(posDot + 1);
@@ -105,13 +101,17 @@ public class SynAnalyzer {
     }
 
 //    Возвращает ситуации "с точкой перед нетерминалом"
-    private ArrayList<Situation> getSituationWithDotAtFrontOfNterm(ArrayList<Situation> current, int index) {
+    private ArrayList<Situation> getSituationWithDotAtFrontOfNterm(ArrayList<Situation> current) {
         ArrayList<Situation> result = new ArrayList();
-        for (int i = index; i < current.size(); i++) {
-            GrammarRule rule = current.get(i).getRule();
-            int posDot = rule.getPosSymbol(this.dot);
-            if ((posDot != -1) && (posDot + 1 < rule.getRight().size()) && this.nterm.equals(rule.getPair(posDot + 1))) {
-                result.add(current.get(i));
+        for (int i = 0; i < current.size(); i++) {
+            if (!current.get(i).getIsProcessedAtFront()) {
+                GrammarRule rule = current.get(i).getRule().copy();
+                int posDot = rule.getPosSymbol(this.dot);
+                if ((posDot != -1) && (posDot + 1 < rule.getRight().size()) && this.nterm.equals(rule.getPair(posDot + 1))) {
+                    Situation dotAtFrontOfNterm = new Situation(rule, current.get(i).getPos());
+                    result.add(dotAtFrontOfNterm);
+                }
+                current.get(i).setIsProcessedAtFront(true);
             }
         }
         return result;
