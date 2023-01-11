@@ -13,6 +13,7 @@ public class SynAnalyzer {
     private final GrammarInterface grammar;
     private final ArrayList<ArrayList<Situation>> table;
     private final Pair dot = new Pair("$", "");
+    private final Pair nterm = new Pair("nterm", "");
 
 //    Конструктор класса
     SynAnalyzer(ArrayList<Pair> lexems, GrammarInterface grammar) {
@@ -28,13 +29,24 @@ public class SynAnalyzer {
         ArrayList<GrammarRule> axiomRules = this.grammar.getRules(this.grammar.getAxiom());
         addDefaultRules(ceil0, axiomRules, step);
         boolean wasAdding = true;
+        int currentIndexNterm = 0;
         while (wasAdding) {
             ArrayList<Situation> situationWithDotInEnd = this.getSituationWithDotInEnd(ceil0);
             for (int i = 0; i < situationWithDotInEnd.size(); i++) {
                 Pair left = situationWithDotInEnd.get(i).getRule().getLeft();
                 this.addSituationWithDotAtFrontOf(ceil0, left, step);
             }
-            if (situationWithDotInEnd.size() == 0) {
+            ArrayList<Situation> situationWithDotAtFrontOfNterm = this.getSituationWithDotAtFrontOfNterm(ceil0, currentIndexNterm);
+            if (!situationWithDotAtFrontOfNterm.isEmpty()) {
+                currentIndexNterm += ceil0.size();
+            }
+            for (int i = 0; i < situationWithDotAtFrontOfNterm.size(); i++) {
+                int posDot = situationWithDotAtFrontOfNterm.get(i).getRule().getPosSymbol(this.dot);
+                Pair Nterm = situationWithDotAtFrontOfNterm.get(i).getRule().getPair(posDot + 1);
+                ArrayList<GrammarRule> possibleRules = this.grammar.getRules(Nterm);
+                addDefaultRules(ceil0, possibleRules, step);
+            }
+            if (situationWithDotInEnd.size() + situationWithDotAtFrontOfNterm.size() == 0) {
                 wasAdding = false;
             }
         }
@@ -61,7 +73,7 @@ public class SynAnalyzer {
         }
     }
 
-//    Возвращает значение "Использовалась ли ситуация при поиски ситуаций с точкой на конце"
+//    Возвращает ситуации "с точкой на конце"
     private ArrayList<Situation> getSituationWithDotInEnd(ArrayList<Situation> current) {
         ArrayList<Situation> result = new ArrayList();
         for (int i = 0; i < current.size(); i++) {
@@ -77,7 +89,7 @@ public class SynAnalyzer {
         return result;
     }
 
-//    Процедура добавления значения "Использовалась ли ситуация при поиски ситуаций с точкой перед нетерминалом"
+//    Добавляет ситуации "с точкой перед терминалом"
     private void addSituationWithDotAtFrontOf(ArrayList<Situation> current, Pair symbol, int pos) {
         for (int i = 0; i < current.size(); i++) {
             if (!current.get(i).getIsProcessedAtFront()) {
@@ -90,5 +102,18 @@ public class SynAnalyzer {
                 current.get(i).setIsProcessedAtFront(true);
             }
         }
+    }
+
+//    Возвращает ситуации "с точкой перед нетерминалом"
+    private ArrayList<Situation> getSituationWithDotAtFrontOfNterm(ArrayList<Situation> current, int index) {
+        ArrayList<Situation> result = new ArrayList();
+        for (int i = index; i < current.size(); i++) {
+            GrammarRule rule = current.get(i).getRule();
+            int posDot = rule.getPosSymbol(this.dot);
+            if ((posDot != -1) && (posDot + 1 < rule.getRight().size()) && this.nterm.equals(rule.getPair(posDot + 1))) {
+                result.add(current.get(i));
+            }
+        }
+        return result;
     }
 }
