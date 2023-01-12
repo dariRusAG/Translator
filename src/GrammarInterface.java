@@ -15,4 +15,6 @@ public interface GrammarInterface {
     public ArrayList<GrammarRule> getRules(Pair left);
 
     public GrammarRule getRuleByIndex(int index);
+
+    public int getRuleIndex(GrammarRule rule);
 }

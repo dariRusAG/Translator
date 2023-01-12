@@ -12,6 +12,7 @@ public class SynAnalyzer {
     private ArrayList<Pair> lexems;
     private final GrammarInterface grammar;
     private final ArrayList<ArrayList<Situation>> table;
+    private ArrayList<Integer> parseString;
     private final Pair dot = new Pair("$", "");
     private final Pair nterm = new Pair("nterm", "");
 
@@ -19,6 +20,7 @@ public class SynAnalyzer {
     SynAnalyzer(ArrayList<Pair> lexems, GrammarInterface grammar) {
         this.lexems = lexems;
         this.grammar = grammar;
+        this.parseString = new ArrayList();
         this.table = new ArrayList(new ArrayList());
     }
 
@@ -118,19 +120,66 @@ public class SynAnalyzer {
     }
 
 
-    //граматика.гетрулс.гет(номер правила)
-//    вход цепочка: 124125136234413
-//берется 3 - номер правила
-//граматика.гетрулс.гет(номер правила)
-//структура правила - левая часть - массив(правая часть)
-//TreeItem (Pair) <- левая часть
-//(правая часть.сайз) детей - создать
-//каждому ребенку <- элемент правой части правила
-//идем по детям справа налево
-//	если нетерминал - берем следущее правила и к 3 строке
-//	переход к следущему ребенку
-//вернуть к родителю и перейти к шагу 8 пока не корень
-//30,31,6,4,39,16,14,12,38,35,1,0
+    // возвращает правило
+    private GrammarRule noDots(GrammarRule rule){
+        GrammarRule newRule = new GrammarRule(rule.getLeft(), null);
+        ArrayList<Pair> right = new ArrayList();
+        for(int i = 0; i < rule.getRight().size(); i++){
+            if(rule.getRight().get(i).getType() != this.dot.getType()){
+                right.add(rule.getRight().get(i));
+            }
+        }
+        newRule.setRight(right);
+        return newRule;
+    }
+
+    // процедура построения цепочки разбора
+    public void parse(){
+        int tableSize = this.table.size() - 1;
+        int colSize = this.table.get(tableSize).size() - 1;
+        //последняя ситуация последнего столбца
+        Situation lex = this.table.get(tableSize).get(colSize);
+        procedureR(lex,lexems.size()-1);
+    }
+
+    // выборка верной ситуации
+    public void procedureR(Situation situation, Integer j){
+        GrammarRule rule = noDots(situation.getRule());
+        parseString.add(this.grammar.getRuleIndex(rule));
+        int m = situation.getRule().getRight().size()-1;
+        int k = m;
+        int c = j;
+        while( k != 0 ){
+            if(situation.getRule().getRight().get(k).getType() != "nterm"){
+                k --;
+                c --;
+            }else {
+                ArrayList<Situation> sit = new ArrayList();
+                ArrayList<Situation> tableSt = this.table.get(c);//Ik table
+                Pair left = situation.getRule().getRight().get(k);//Xk
+                //находим ситуации в Ik
+                for(int i = 0; i < tableSt.size(); i++ ){
+                    if (left.equals(tableSt.get(i).getRule().getLeft())) {
+                        sit.add(tableSt.get(i));
+                    }
+                }
+                //из них выбираем верное
+                int r = 0;
+                Situation rSituation = situation;
+                for(int i = 0; i < sit.size(); i++ ){
+                    if(this.table.get(sit.get(i).getPos()).contains(situation)){
+                        rSituation = sit.get(i);
+                        r = rSituation.getPos();
+                        procedureR(rSituation, c);
+                    }
+                }
+                procedureR(rSituation, c);
+                k --;
+                c = r;
+            }
+        }
+
+    }
 
     // процедура посроения дерева разбора
     public ParseTree buildTree(ArrayList<Integer> numb_seq){
@@ -174,23 +223,6 @@ public class SynAnalyzer {
         }
     }
 
-//    public void printTree(TreeItem root) throws UnsupportedEncodingException {
-//        PrintStream ps = new PrintStream(System.out, false, "utf-8");
-//        ArrayList<TreeItem> childs = root.getChilds();
-//        int number = childs.size()-1;
-//        TreeItem walker = root.getChilds().get(number);
-//       // обходит детей текущего узла
-//        while(walker != root){
-//            if(walker.getVal().getType() == "nterm"){//если нетерминал
-//                  printTree(walker);
-//
-//            }else if(number >0){
-//                number --;
-//                walker = root.getChilds().get(number);
-//            } else walker = walker.getParent();
-//        }
-//        ps.print();
-//    }
 
 
 }

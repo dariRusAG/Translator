@@ -98,4 +98,9 @@ public class GrammarRule {
         }
         return new GrammarRule(left, right);
     }
+
+    // процедура установки правой части правила
+    public void setRight(ArrayList<Pair> list){
+        this.right = list;
+    }
 }

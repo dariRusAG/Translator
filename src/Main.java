@@ -16,6 +16,7 @@ public class Main {
             SynAnalyzer pascalSynAnal = new SynAnalyzer(pascalLexAnal.getListLexem(), pascalGrammar);
 //            pascalSynAnal.makeTable();
 
+            pascalSynAnal.parse();
 
             //30,31,6,4,39,16,14,12,38,35,1,0
             ArrayList<Integer> arrInt = new ArrayList<>();
