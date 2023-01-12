@@ -511,4 +511,12 @@ public class PascalGrammar implements GrammarInterface {
         }
         return result;
     }
+
+    // получение правила по индексу
+    @Override
+    public GrammarRule getRuleByIndex(int index) {
+        if(index < this.rules.size())
+            return this.rules.get(index);
+        else return null;
+    }
 }

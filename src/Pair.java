@@ -81,4 +81,9 @@ public class Pair {
         }
         return eq;
     }
+
+    // возвращает type Pair
+    public String getType(){
+        return this.type;
+    }
 }

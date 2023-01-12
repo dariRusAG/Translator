@@ -116,4 +116,81 @@ public class SynAnalyzer {
         }
         return result;
     }
+
+
+    //граматика.гетрулс.гет(номер правила)
+//    вход цепочка: 124125136234413
+//берется 3 - номер правила
+//граматика.гетрулс.гет(номер правила)
+//структура правила - левая часть - массив(правая часть)
+//TreeItem (Pair) <- левая часть
+//(правая часть.сайз) детей - создать
+//каждому ребенку <- элемент правой части правила
+//идем по детям справа налево
+//	если нетерминал - берем следущее правила и к 3 строке
+//	переход к следущему ребенку
+//вернуть к родителю и перейти к шагу 8 пока не корень
+//30,31,6,4,39,16,14,12,38,35,1,0
+
+    // процедура посроения дерева разбора
+    public ParseTree buildTree(ArrayList<Integer> numb_seq){
+        int last_item = numb_seq.size() - 1;
+        GrammarRule root_rule = this.grammar.getRuleByIndex(numb_seq.get(last_item));
+        ParseTree tree = new ParseTree(root_rule.getLeft());
+        walk(tree.getRoot(), numb_seq, last_item);
+        return tree;
+    }
+
+
+    // обход дерева
+    public void walk(TreeItem root, ArrayList<Integer> numb_seq, Integer index ){
+        int num = index;
+        GrammarRule cur_rule = this.grammar.getRuleByIndex(numb_seq.get(index));//получаем текущее правило
+        //присваеваем правую часть детям текущего узла
+        ArrayList<Pair> childs = cur_rule.getRight();
+        root.addChilds(childs);
+        int cs = childs.size();
+        if(cs > 0 ){
+            int number = childs.size()-1;
+
+            TreeItem walker = root.getChilds().get(number);
+            // обходит детей текущего узла
+            while(walker != root){
+                if(walker.getVal().getType() == "nterm"){//если нетерминал
+                    num --;
+                    walk(walker, numb_seq, num);
+                    if(number != 0){
+                        number --;
+                        walker = root.getChilds().get(number);
+                    }else walker = walker.getParent();
+
+                }else if(number >0){
+                    number --;
+                    walker = root.getChilds().get(number);
+                } else {
+                    walker = walker.getParent();
+                }
+            }
+        }
+    }
+
+//    public void printTree(TreeItem root) throws UnsupportedEncodingException {
+//        PrintStream ps = new PrintStream(System.out, false, "utf-8");
+//        ArrayList<TreeItem> childs = root.getChilds();
+//        int number = childs.size()-1;
+//        TreeItem walker = root.getChilds().get(number);
+//       // обходит детей текущего узла
+//        while(walker != root){
+//            if(walker.getVal().getType() == "nterm"){//если нетерминал
+//                  printTree(walker);
+//
+//            }else if(number >0){
+//                number --;
+//                walker = root.getChilds().get(number);
+//            } else walker = walker.getParent();
+//        }
+//        ps.print();
+//    }
+
+
 }

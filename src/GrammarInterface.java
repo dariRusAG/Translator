@@ -13,4 +13,6 @@ public interface GrammarInterface {
     public Pair getAxiom();
 
     public ArrayList<GrammarRule> getRules(Pair left);
+
+    public GrammarRule getRuleByIndex(int index);
 }
