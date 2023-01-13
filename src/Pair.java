@@ -29,7 +29,7 @@ public class Pair {
 
 //     Метод вывода лексемы на экран
     void print() throws UnsupportedEncodingException {
-        PrintStream ps = new PrintStream(System.out, false, "utf-8");
+        PrintStream ps = new PrintStream(System.out, false, "cp1251");
         ps.print("( <" + type + "> " + name + " )");
     }
 
@@ -86,4 +86,6 @@ public class Pair {
     public String getType(){
         return this.type;
     }
+
+
 }

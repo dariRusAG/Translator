@@ -5,8 +5,8 @@ import java.util.ArrayList;
 public class Main {
 
     public static void main(String[] args) throws UnsupportedEncodingException, Exception {
-        String pascalFile = "src/code.pas";
-        PrintStream ps = new PrintStream(System.out, false, "utf-8");
+        String pascalFile = "program1.txt";;
+        //PrintStream ps = new PrintStream(System.out, false, "utf-8");
         LexAnalyzer pascalLexAnal = new LexAnalyzer(pascalFile);
         try {
             pascalLexAnal.makeAnalysis();
@@ -39,6 +39,7 @@ public class Main {
             arrInt.add(0);
 
         } catch (Exception e) {
+            PrintStream ps = new PrintStream(System.out, false, "cp1251");
             ps.print(e.getMessage());
         }
 
