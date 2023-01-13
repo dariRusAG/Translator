@@ -29,7 +29,7 @@ public class Pair {
 
 //     Метод вывода лексемы на экран
     void print() throws UnsupportedEncodingException {
-        PrintStream ps = new PrintStream(System.out, false, "cp1251");
+        PrintStream ps = new PrintStream(System.out, false, "utf-8");
         ps.print("( <" + type + "> " + name + " )");
     }
 
@@ -46,9 +46,25 @@ public class Pair {
     public void setInUse(boolean value) {
         this.inUse = value;
     }
+
 //    Устанавливает количество ссылок на переменную в коде
     public void setCountOfLink(int count) {
         this.countOfLink = count;
+    }
+
+//    Возвращает type Pair
+    public String getType(){
+        return this.type;
+    }
+
+//    Возвращает name Pair
+    public String getName() {
+        return this.name;
+    }
+
+//    Возвращает контекстный тип лексемы
+    public String getContextType() {
+        return this.contextType;
     }
 
 //    Возвращает копию объекта Pair
@@ -81,11 +97,4 @@ public class Pair {
         }
         return eq;
     }
-
-    // возвращает type Pair
-    public String getType(){
-        return this.type;
-    }
-
-
 }

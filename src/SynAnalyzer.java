@@ -19,7 +19,7 @@ public class SynAnalyzer {
     private final Pair dot = new Pair("$", "");
     private final Pair nterm = new Pair("nterm", "");
 
-//    Конструктор класса
+    //    Конструктор класса
     SynAnalyzer(ArrayList<Pair> lexems, GrammarInterface grammar) {
         this.lexems = lexems;
         this.grammar = grammar;
@@ -28,7 +28,7 @@ public class SynAnalyzer {
         this.table = new ArrayList(new ArrayList());
     }
 
-//    процедура составления таблицы разбора для метода Эрли
+    //    процедура составления таблицы разбора для метода Эрли
     public void makeTable() {
         int step = 0;
         ArrayList<Situation> ceil0 = new ArrayList();
@@ -87,7 +87,7 @@ public class SynAnalyzer {
         }
     }
 
-//    Добавление ситуации "По умолчанию"
+    //    Добавление ситуации "По умолчанию"
     private void addDefaultRules(ArrayList<Situation> container, ArrayList<GrammarRule> rules, int pos) {
         for (int i = 0; i < rules.size(); i++) {
             GrammarRule ruleWithDot = rules.get(i).getRuleWithDot(0);
@@ -107,7 +107,7 @@ public class SynAnalyzer {
         }
     }
 
-//    Возвращает ситуации "с точкой на конце"
+    //    Возвращает ситуации "с точкой на конце"
     private ArrayList<Situation> getSituationWithDotInEnd(ArrayList<Situation> current) {
         ArrayList<Situation> result = new ArrayList();
         for (int i = 0; i < current.size(); i++) {
@@ -122,8 +122,8 @@ public class SynAnalyzer {
         }
         return result;
     }
-    
-//    Добавляет ситуации "с точкой перед терминалом"
+
+    //    Добавляет ситуации "с точкой перед терминалом"
     private void addSituationWithDotAtFrontOf(ArrayList<Situation> current, Pair symbol, int pos) {
         for (int i = 0; i < current.size(); i++) {
             if (!current.get(i).getIsProcessedAtFront()) {
@@ -138,7 +138,7 @@ public class SynAnalyzer {
         }
     }
 
-//    Возвращает ситуации "с точкой перед терминалом"
+    //    Возвращает ситуации "с точкой перед терминалом"
     private ArrayList<Situation> getSituationWithDotAtFrontOf(ArrayList<Situation> current, Pair symbol, int pos) {
         ArrayList<Situation> result = new ArrayList();
         for (int i = 0; i < current.size(); i++) {
@@ -158,7 +158,7 @@ public class SynAnalyzer {
         return result;
     }
 
-//    Возвращает ситуации "с точкой перед нетерминалом"
+    //    Возвращает ситуации "с точкой перед нетерминалом"
     private ArrayList<Situation> getSituationWithDotAtFrontOfNterm(ArrayList<Situation> current) {
         ArrayList<Situation> result = new ArrayList();
         for (int i = 0; i < current.size(); i++) {
@@ -304,7 +304,12 @@ public class SynAnalyzer {
         return num;
     }
 
-//    печать таблицы разбора на экран
+    //    возвращает дерево после синтаксического разбора
+    public ParseTree getTree() {
+        return this.parseTree;
+    }
+
+    //    печать таблицы разбора на экран
     public void printTable() throws UnsupportedEncodingException {
         PrintStream ps = new PrintStream(System.out, false, "utf-8");
         for (int i = 0; i < this.table.size(); i++) {

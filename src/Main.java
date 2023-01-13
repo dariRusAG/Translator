@@ -1,12 +1,11 @@
 import java.io.UnsupportedEncodingException;
 import java.io.PrintStream;
-import java.util.ArrayList;
 
 public class Main {
 
     public static void main(String[] args) throws UnsupportedEncodingException, Exception {
-         String pascalFile = "program1.txt";
-//        PrintStream ps = new PrintStream(System.out, false, "utf-8");
+        String pascalFile = "src/code.pas";
+        PrintStream ps = new PrintStream(System.out, false, "utf-8");
         LexAnalyzer pascalLexAnal = new LexAnalyzer(pascalFile);
         try {
             pascalLexAnal.makeAnalysis();
@@ -14,7 +13,8 @@ public class Main {
             PascalGrammar pascalGrammar = new PascalGrammar(new Pair("nterm","программа"));
 //            pascalGrammar.print();
             CGrammar cGrammar = new CGrammar(new Pair("nterm", "программа"));
-            cGrammar.print();
+//            cGrammar.print();
+
 //            String pascalFile = "src/program_1.pas";
 //            PrintStream ps = new PrintStream(System.out, false, "utf-8");
             SynAnalyzer pascalSynAnal = new SynAnalyzer(pascalLexAnal.getListLexem(), pascalGrammar);
@@ -29,10 +29,14 @@ public class Main {
 
 //            ParseTree tree = pascalSynAnal.buildTree(arrInt);
 
-
+            SemAnalyzer pascalSemAnal = new SemAnalyzer(pascalSynAnal.getTree());
+            pascalSemAnal.makeAnalysis();
+            if (!pascalSemAnal.hasError()) {
+                // Трансляция в С++
+            }
 
         } catch (Exception e) {
-            PrintStream ps = new PrintStream(System.out, false, "cp1251");
+//            PrintStream ps = new PrintStream(System.out, false, "cp1251");
             ps.print(e.getMessage());
         }
     }
