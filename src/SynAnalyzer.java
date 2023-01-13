@@ -5,6 +5,8 @@
 
 // Для синтаксического анализа был выбран алгоритм нисходящего разбора с возвратами.
 
+import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 // Класс синтаксического анализатора
@@ -25,7 +27,7 @@ public class SynAnalyzer {
     }
 
 //    процедура составления таблицы разбора для метода Эрли
-    public void makeTable() throws Exception {
+    public void makeTable() {
         int step = 0;
         ArrayList<Situation> ceil0 = new ArrayList();
         ArrayList<GrammarRule> axiomRules = this.grammar.getRules(this.grammar.getAxiom());
@@ -49,6 +51,38 @@ public class SynAnalyzer {
             }
         }
         this.table.add(ceil0);
+        step++;
+        while (step <= this.lexems.size()) {
+            ArrayList<Situation> ceil = new ArrayList();
+            ArrayList<Situation> situationWithDotAtFrontOfCurrentTerm = getSituationWithDotAtFrontOf(this.table.get(step - 1), this.lexems.get(step - 1), -1);
+            for (int i = 0; i < situationWithDotAtFrontOfCurrentTerm.size(); i++) {
+                ceil.add(situationWithDotAtFrontOfCurrentTerm.get(i));
+            }
+            wasAdding = true;
+            while (wasAdding) {
+                ArrayList<Situation> situationWithDotInEnd = this.getSituationWithDotInEnd(ceil);
+                for (int i = 0; i < situationWithDotInEnd.size(); i++) {
+                    int index = situationWithDotInEnd.get(i).getPos();
+                    Pair Nterm = situationWithDotInEnd.get(i).getRule().getLeft();
+                    ArrayList<Situation> successMatchSituation = getSituationWithDotAtFrontOf(this.table.get(index), Nterm, -1);
+                    for (int j = 0; j < successMatchSituation.size(); j++) {
+                        ceil.add(successMatchSituation.get(j));
+                    }
+                }
+                ArrayList<Situation> situationWithDotAtFrontOfNterm = this.getSituationWithDotAtFrontOfNterm(ceil);
+                for (int i = 0; i < situationWithDotAtFrontOfNterm.size(); i++) {
+                    int posDot = situationWithDotAtFrontOfNterm.get(i).getRule().getPosSymbol(this.dot);
+                    Pair Nterm = situationWithDotAtFrontOfNterm.get(i).getRule().getPair(posDot + 1);
+                    ArrayList<GrammarRule> possibleRules = this.grammar.getRules(Nterm);
+                    addDefaultRules(ceil, possibleRules, step);
+                }
+                if (situationWithDotInEnd.size() + situationWithDotAtFrontOfNterm.size() == 0) {
+                    wasAdding = false;
+                }
+            }
+            table.add(ceil);
+            step++;
+        }
     }
 
 //    Добавление ситуации "По умолчанию"
@@ -86,7 +120,7 @@ public class SynAnalyzer {
         }
         return result;
     }
-
+    
 //    Добавляет ситуации "с точкой перед терминалом"
     private void addSituationWithDotAtFrontOf(ArrayList<Situation> current, Pair symbol, int pos) {
         for (int i = 0; i < current.size(); i++) {
@@ -100,6 +134,26 @@ public class SynAnalyzer {
                 current.get(i).setIsProcessedAtFront(true);
             }
         }
+    }
+
+//    Возвращает ситуации "с точкой перед терминалом"
+    private ArrayList<Situation> getSituationWithDotAtFrontOf(ArrayList<Situation> current, Pair symbol, int pos) {
+        ArrayList<Situation> result = new ArrayList();
+        for (int i = 0; i < current.size(); i++) {
+            GrammarRule rule = current.get(i).getRule().copy();
+            int posDot = rule.getPosSymbol(this.dot);
+            if ((posDot != -1) && (posDot + 1 < rule.getRight().size()) && symbol.equals(rule.getPair(posDot + 1))) {
+                if (pos != -1) {
+                    Situation success = new Situation(rule.swapPos(posDot, posDot + 1), pos);
+                    result.add(success);
+                } else {
+                    int currentPos = current.get(i).getPos();
+                    Situation success = new Situation(rule.swapPos(posDot, posDot + 1), currentPos);
+                    result.add(success);
+                }
+            }
+        }
+        return result;
     }
 
 //    Возвращает ситуации "с точкой перед нетерминалом"
@@ -118,7 +172,6 @@ public class SynAnalyzer {
         }
         return result;
     }
-
 
     // возвращает правило
     private GrammarRule noDots(GrammarRule rule){
@@ -233,6 +286,16 @@ public class SynAnalyzer {
         }
     }
 
-
-
+//    печать таблицы разбора на экран
+    public void printTable() throws UnsupportedEncodingException {
+        PrintStream ps = new PrintStream(System.out, false, "utf-8");
+        for (int i = 0; i < this.table.size(); i++) {
+            ps.println("========  I[" + i + "] ========");
+            ArrayList<Situation> situation = this.table.get(i);
+            for (int j = 0; j < situation.size(); j++) {
+                situation.get(j).print();
+                ps.println();
+            }
+        }
+    }
 }
