@@ -15,6 +15,7 @@ public class SynAnalyzer {
     private final GrammarInterface grammar;
     private final ArrayList<ArrayList<Situation>> table;
     private ArrayList<Integer> parseString;
+    private ParseTree parseTree;
     private final Pair dot = new Pair("$", "");
     private final Pair nterm = new Pair("nterm", "");
 
@@ -23,6 +24,7 @@ public class SynAnalyzer {
         this.lexems = lexems;
         this.grammar = grammar;
         this.parseString = new ArrayList();
+        this.parseTree = new ParseTree(null);
         this.table = new ArrayList(new ArrayList());
     }
 
@@ -187,11 +189,11 @@ public class SynAnalyzer {
     }
 
     // функция проверки нахождения в таблице
-    private boolean findInTableByColumnAndSit(Situation situation, int column, int k){
+    private boolean findInTableByColumnAndSit(Situation situation, int column, int k) {
         ArrayList<Situation> tbColumn = this.table.get(column);
         boolean result = false;
         for(int i = 0; i < tbColumn.size(); i++ ){
-            if(tbColumn.get(i).getRule().getLeft().equals(situation.getRule().getLeft()) && tbColumn.get(i).getRule().getRight().get(k).equals(this.dot)){
+            if (tbColumn.get(i).getRule().getLeft().equals(situation.getRule().getLeft()) && k < tbColumn.get(i).getRule().getRight().size() && tbColumn.get(i).getRule().getRight().get(k).equals(this.dot)) {
                 result = true;
             }
         }
@@ -200,38 +202,46 @@ public class SynAnalyzer {
     // процедура построения цепочки разбора
     public void parse(){
         int tableSize = this.table.size() - 1;
-        int colSize = this.table.get(tableSize).size() - 1;
+        int colSize = this.table.get(tableSize).size();
+        ArrayList<Situation> tbColumn = this.table.get(tableSize);
         //последняя ситуация последнего столбца
-        Situation lex = this.table.get(tableSize).get(colSize);
-        procedureR(lex,lexems.size()-1);
+        Situation lex = null;
+        for (int i = 0; i < colSize; i++) {
+            if (tbColumn.get(i).getRule().getLeft().equals(this.grammar.getAxiom()) && tbColumn.get(i).getRule().getRight().get(tbColumn.get(i).getRule().getRight().size()-1).equals(this.dot)) {
+                lex = tbColumn.get(i);
+            }
+        }
+
+        procedureR(lex, table.size()-1);
     }
 
     // выборка верной ситуации
     public void procedureR(Situation situation, int j){
         GrammarRule rule = noDots(situation.getRule());
-        parseString.add(this.grammar.getRuleIndex(rule));
-        int m = rule.getRight().size() - 1 ;
+        int rulnum = this.grammar.getRuleIndex(rule);
+        parseString.add(rulnum);
+        int m = rule.getRight().size() - 1;
         int k = m;
         int c = j;
-        while( k != 0 ){
-            if(rule.getRight().get(k).getType() != "nterm"){
-                k --;
-                c --;
-            }else {
+        while (k >= 0) {
+            if (rule.getRight().get(k).getType() != "nterm") {
+                k--;
+                c--;
+            } else {
                 ArrayList<Situation> sit = new ArrayList();
                 ArrayList<Situation> tableSt = this.table.get(c);//Ic table
-                Pair left = rule.getRight().get(k);//Xk
+                Pair left = rule.getRight().get(k).copy();//Xk
                 //находим ситуации в Ic
                 for(int i = 0; i < tableSt.size(); i++ ){
-                    if (left.equals(tableSt.get(i).getRule().getLeft())) {
+                    if (left.equals(tableSt.get(i).getRule().getLeft()) && tableSt.get(i).getRule().getPosSymbol(dot) == tableSt.get(i).getRule().getRight().size() - 1) {
                         sit.add(tableSt.get(i));
                     }
                 }
                 //из них выбираем верное
                 int r = 0;
                 Situation rSituation = null;
-                for(int i = 0; i < sit.size(); i++ ){
-                    if(this.findInTableByColumnAndSit(situation, sit.get(i).getPos(), k) != false){
+                for (int i = 0; i < sit.size(); i++) {
+                    if (this.findInTableByColumnAndSit(situation, sit.get(i).getPos(), k) != false) {
                         rSituation = sit.get(i);
                         r = rSituation.getPos();
                     }
@@ -245,17 +255,18 @@ public class SynAnalyzer {
     }
 
     // процедура посроения дерева разбора
-    public ParseTree buildTree(ArrayList<Integer> numb_seq){
+    public void buildTree() {
+        ArrayList<Integer> numb_seq = this.parseString;
         int last_item = numb_seq.size() - 1;
         GrammarRule root_rule = this.grammar.getRuleByIndex(numb_seq.get(last_item));
         ParseTree tree = new ParseTree(root_rule.getLeft());
         walk(tree.getRoot(), numb_seq, last_item);
-        return tree;
+        this.parseTree = tree;
     }
 
 
     // обход дерева
-    public void walk(TreeItem root, ArrayList<Integer> numb_seq, Integer index ){
+    private void walk(TreeItem root, ArrayList<Integer> numb_seq, Integer index) {
         int num = index;
         GrammarRule cur_rule = this.grammar.getRuleByIndex(numb_seq.get(index));//получаем текущее правило
         //присваеваем правую часть детям текущего узла
