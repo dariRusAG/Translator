@@ -12,7 +12,9 @@ public class Main {
             pascalLexAnal.makeAnalysis();
 //            pascalLexAnal.print();
             PascalGrammar pascalGrammar = new PascalGrammar(new Pair("nterm","программа"));
-            //pascalGrammar.print();
+//            pascalGrammar.print();
+            CGrammar cGrammar = new CGrammar(new Pair("nterm", "программа"));
+//            cGrammar.print();
             SynAnalyzer pascalSynAnal = new SynAnalyzer(pascalLexAnal.getListLexem(), pascalGrammar);
 //            pascalSynAnal.makeTable();
 
