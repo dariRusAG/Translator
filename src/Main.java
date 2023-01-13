@@ -4,8 +4,10 @@ import java.io.PrintStream;
 public class Main {
 
     public static void main(String[] args) throws UnsupportedEncodingException, Exception {
+
 //        String pascalFile = "src/code.pas";
         String pascalFile = "src/program_1.pas";
+        // String pascalFile = "program1.txt";
         PrintStream ps = new PrintStream(System.out, false, "utf-8");
         LexAnalyzer pascalLexAnal = new LexAnalyzer(pascalFile);
         try {
@@ -40,6 +42,7 @@ public class Main {
 //            arrInt.add(0);
 
         } catch (Exception e) {
+            PrintStream ps = new PrintStream(System.out, false, "cp1251");
             ps.print(e.getMessage());
         }
 

@@ -525,7 +525,7 @@ public class PascalGrammar implements GrammarInterface {
     public int getRuleIndex(GrammarRule rule){
         for (int i = 0; i < this.rules.size(); i++) {
 
-            if(this.rules.get(i).getLeft().equals(rule.getLeft())  && this.rules.get(i).getRight().equals(rule.getRight())){
+            if(this.rules.get(i).getLeft().equals(rule.getLeft()) && this.rules.get(i).getRight().equals(rule.getRight())){
                 return i;
             }
 

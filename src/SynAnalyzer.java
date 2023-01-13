@@ -186,6 +186,17 @@ public class SynAnalyzer {
         return newRule;
     }
 
+    // функция проверки нахождения в таблице
+    private boolean findInTableByColumnAndSit(Situation situation, int column, int k){
+        ArrayList<Situation> tbColumn = this.table.get(column);
+        boolean result = false;
+        for(int i = 0; i < tbColumn.size(); i++ ){
+            if(tbColumn.get(i).getRule().getLeft().equals(situation.getRule().getLeft()) && tbColumn.get(i).getRule().getRight().get(k).equals(this.dot)){
+                result = true;
+            }
+        }
+        return result;
+    }
     // процедура построения цепочки разбора
     public void parse(){
         int tableSize = this.table.size() - 1;
@@ -196,21 +207,21 @@ public class SynAnalyzer {
     }
 
     // выборка верной ситуации
-    public void procedureR(Situation situation, Integer j){
+    public void procedureR(Situation situation, int j){
         GrammarRule rule = noDots(situation.getRule());
         parseString.add(this.grammar.getRuleIndex(rule));
-        int m = situation.getRule().getRight().size()-1;
+        int m = rule.getRight().size() - 1 ;
         int k = m;
         int c = j;
         while( k != 0 ){
-            if(situation.getRule().getRight().get(k).getType() != "nterm"){
+            if(rule.getRight().get(k).getType() != "nterm"){
                 k --;
                 c --;
             }else {
                 ArrayList<Situation> sit = new ArrayList();
-                ArrayList<Situation> tableSt = this.table.get(c);//Ik table
-                Pair left = situation.getRule().getRight().get(k);//Xk
-                //находим ситуации в Ik
+                ArrayList<Situation> tableSt = this.table.get(c);//Ic table
+                Pair left = rule.getRight().get(k);//Xk
+                //находим ситуации в Ic
                 for(int i = 0; i < tableSt.size(); i++ ){
                     if (left.equals(tableSt.get(i).getRule().getLeft())) {
                         sit.add(tableSt.get(i));
@@ -218,12 +229,11 @@ public class SynAnalyzer {
                 }
                 //из них выбираем верное
                 int r = 0;
-                Situation rSituation = situation;
+                Situation rSituation = null;
                 for(int i = 0; i < sit.size(); i++ ){
-                    if(this.table.get(sit.get(i).getPos()).contains(situation)){
+                    if(this.findInTableByColumnAndSit(situation, sit.get(i).getPos(), k) != false){
                         rSituation = sit.get(i);
                         r = rSituation.getPos();
-                        procedureR(rSituation, c);
                     }
                 }
                 procedureR(rSituation, c);
