@@ -25,6 +25,7 @@ public class Main {
             pascalSynAnal.buildTree();
 
             //30,31,6,4,39,16,14,12,38,35,1,0
+            int n = 9;
 
 //            ParseTree tree = pascalSynAnal.buildTree(arrInt);
 
