@@ -261,41 +261,45 @@ public class SynAnalyzer {
         int last_item = 0;
         GrammarRule root_rule = this.grammar.getRuleByIndex(numb_seq.get(last_item));
         ParseTree tree = new ParseTree(root_rule.getLeft());
-        walk(tree.getRoot(), numb_seq, last_item);
+        int n = walk(tree.getRoot(), numb_seq, last_item);
+        //walk(tree.getRoot(), numb_seq, last_item);
         this.parseTree = tree;
     }
 
 
     // обход дерева
-    private void walk(TreeItem root, ArrayList<Integer> numb_seq, Integer index) {
+    private int walk(TreeItem root, ArrayList<Integer> numb_seq, Integer index) {
         int num = index;
         GrammarRule cur_rule = this.grammar.getRuleByIndex(numb_seq.get(index));//получаем текущее правило
         //присваеваем правую часть детям текущего узла
         ArrayList<Pair> childs = cur_rule.getRight();
         root.addChilds(childs);
         int cs = childs.size();
-        if(cs > 0 ){
-            int number = childs.size()-1;
-
+        if (cs > 0) {
+            int number = childs.size() - 1;
             TreeItem walker = root.getChilds().get(number);
             // обходит детей текущего узла
-            while(walker != root){
-                if(walker.getVal().getType() == "nterm"){//если нетерминал
-                    num ++;
-                    walk(walker, numb_seq, num);
-                    if(number != 0){
-                        number --;
+            while (walker != root) {
+                if (walker.getVal().getType().equals("nterm")) {//если нетерминал
+                    num++;
+                    int n = walk(walker, numb_seq, num);
+                    num = n;
+                    if (number != 0) {
+                        number--;
                         walker = root.getChilds().get(number);
-                    }else walker = walker.getParent();
+                    } else {
+                        walker = walker.getParent();
+                    }
 
-                }else if(number >0){
-                    number --;
+                } else if (number > 0) {
+                    number--;
                     walker = root.getChilds().get(number);
                 } else {
                     walker = walker.getParent();
                 }
             }
         }
+        return num;
     }
 
 //    печать таблицы разбора на экран
