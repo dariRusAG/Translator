@@ -4,7 +4,7 @@ import java.io.PrintStream;
 public class Main {
 
     public static void main(String[] args) throws UnsupportedEncodingException, Exception {
-        String pascalFile = "src/code.pas";
+        String pascalFile = "src/program_2.txt";
         PrintStream ps = new PrintStream(System.out, false, "utf-8");
         LexAnalyzer pascalLexAnal = new LexAnalyzer(pascalFile);
         try {
@@ -15,19 +15,12 @@ public class Main {
             CGrammar cGrammar = new CGrammar(new Pair("nterm", "программа"));
 //            cGrammar.print();
 
-//            String pascalFile = "src/program_1.pas";
-//            PrintStream ps = new PrintStream(System.out, false, "utf-8");
             SynAnalyzer pascalSynAnal = new SynAnalyzer(pascalLexAnal.getListLexem(), pascalGrammar);
-//            pascalSynAnal.makeTable();
+            pascalSynAnal.makeTable();
 //            pascalSynAnal.printTable();
 
             pascalSynAnal.parse();
             pascalSynAnal.buildTree();
-
-            //30,31,6,4,39,16,14,12,38,35,1,0
-            int n = 9;
-
-//            ParseTree tree = pascalSynAnal.buildTree(arrInt);
 
             SemAnalyzer pascalSemAnal = new SemAnalyzer(pascalSynAnal.getTree());
             pascalSemAnal.makeAnalysis();
@@ -36,7 +29,6 @@ public class Main {
             }
 
         } catch (Exception e) {
-//            PrintStream ps = new PrintStream(System.out, false, "cp1251");
             ps.print(e.getMessage());
         }
     }

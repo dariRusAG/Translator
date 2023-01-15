@@ -37,6 +37,7 @@ public class Pair {
     public void setContextType(String type) {
         this.contextType = type;
     }
+
 //    Процедура установки контекстного значения лексемы
     public void setContextValue(String value) {
         this.contextValue = value;
@@ -65,6 +66,11 @@ public class Pair {
 //    Возвращает контекстный тип лексемы
     public String getContextType() {
         return this.contextType;
+    }
+
+//    Возвращает контекстное значение лексемы
+    public String getContextValue() {
+        return this.contextValue;
     }
 
 //    Возвращает копию объекта Pair

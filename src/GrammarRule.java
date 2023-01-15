@@ -107,14 +107,16 @@ public class GrammarRule {
     // функция, проверяющая на равенство правых частей правил
     public boolean rightEquals(ArrayList<Pair> pairs) {
         boolean r = true;
-        if(this.right.size() == pairs.size()){
-            for(int i = 0; i < pairs.size(); i++){
-                if(pairs.get(i).equals(this.right.get(i)) == false){
+        if (this.right.size() == pairs.size()) {
+            for (int i = 0; i < pairs.size(); i++) {
+                if (pairs.get(i).equals(this.right.get(i)) == false) {
                     r = false;
                 }
             }
             return r;
-        }else r = false;
+        } else {
+            r = false;
+        }
         return r;
     }
 }
