@@ -93,7 +93,7 @@ public class PossibleOperationRepository {
         PossibleOperation o42 = new PossibleOperation("+", "char", "char", "string");
         operation.add(o42);
         PossibleOperation o43 = new PossibleOperation("<", "integer", "integer", "boolean");
-        operation.add(o42);
+        operation.add(o43);
         PossibleOperation o44 = new PossibleOperation(">", "integer", "integer", "boolean");
         operation.add(o44);
         PossibleOperation o45 = new PossibleOperation("<=", "integer", "integer", "boolean");

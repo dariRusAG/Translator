@@ -1,3 +1,4 @@
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.io.PrintStream;
 
@@ -5,9 +6,15 @@ public class Main {
 
     public static void main(String[] args) throws UnsupportedEncodingException, Exception {
         String pascalFile = "src/program_2.txt";
+        File file = new File("pascalFile");
         PrintStream ps = new PrintStream(System.out, false, "utf-8");
+
         LexAnalyzer pascalLexAnal = new LexAnalyzer(pascalFile);
         try {
+            if (file.length() == 0){
+                throw new Exception("Файл пуст");
+            }
+
             pascalLexAnal.makeAnalysis();
 //            pascalLexAnal.print();
             PascalGrammar pascalGrammar = new PascalGrammar(new Pair("nterm","программа"));

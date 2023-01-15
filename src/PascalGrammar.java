@@ -336,6 +336,7 @@ public class PascalGrammar implements GrammarInterface {
 
         ArrayList<Pair> right49 = new ArrayList();
         right49.add(new Pair("keyword", "while"));
+        right49.add(new Pair("keyword", "do"));
         right49.add(new Pair("bracket", "("));
         right49.add(new Pair("nterm", "булево выражение"));
         right49.add(new Pair("bracket", ")"));
