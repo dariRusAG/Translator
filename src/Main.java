@@ -33,6 +33,9 @@ public class Main {
             pascalSemAnal.makeAnalysis();
             if (!pascalSemAnal.hasError()) {
                 // Трансляция в С++
+                Translator pascalToC = new Translator(cGrammar,
+                        pascalSynAnal.getParse(),
+                        pascalLexAnal.getListLexem());
             }
 
         } catch (Exception e) {

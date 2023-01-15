@@ -27,8 +27,6 @@ public class TreeItem {
             TreeItem newChild = new TreeItem(list.get(i));
             newChild.setParent(this);
             this.childs.add(i, newChild);
-
-
         }
     }
 
@@ -47,5 +45,27 @@ public class TreeItem {
         return this.val;
     }
 
-
+//    Перегрузка
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof TreeItem)) {
+            return false;
+        }
+        TreeItem c = (TreeItem) o;
+        boolean eq = true;
+        if (c.getVal().equals(this.getVal())) {
+            if (c.getChilds().size() != this.getChilds().size()) {
+                eq = false;
+            }
+            int i = 0;
+            while (i < this.childs.size() && eq) {
+                eq = this.getChilds().get(i).equals(c.getChilds().get(i));
+                i++;
+            }
+        }
+        return eq;
+    }
 }
