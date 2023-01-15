@@ -369,6 +369,11 @@ public class SynAnalyzer {
         return this.parseTree;
     }
 
+//    возвращает цепочку разбора
+    public ArrayList<Integer> getParse() {
+        return this.parseString;
+    }
+
     //    печать таблицы разбора на экран
     public void printTable() throws UnsupportedEncodingException {
         PrintStream ps = new PrintStream(System.out, false, "utf-8");
