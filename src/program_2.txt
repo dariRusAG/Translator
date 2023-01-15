@@ -1,5 +1,5 @@
 var a:integer;
-var b:string := 5;
+var b:integer := 5;
 begin
 a:=b;
 end.

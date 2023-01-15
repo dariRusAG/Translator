@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 // Класс синтаксического анализатора
 public class SynAnalyzer {
+    private int current = 0;
     private ArrayList<Pair> lexems;
     private final GrammarInterface grammar;
     private final ArrayList<ArrayList<Situation>> table;
@@ -29,7 +30,7 @@ public class SynAnalyzer {
     }
 
     //    процедура составления таблицы разбора для метода Эрли
-    public void makeTable() {
+    public void makeTable() throws Exception {
         int step = 0;
         ArrayList<Situation> ceil0 = new ArrayList();
         ArrayList<GrammarRule> axiomRules = this.grammar.getRules(this.grammar.getAxiom());
@@ -56,9 +57,20 @@ public class SynAnalyzer {
         step++;
         while (step <= this.lexems.size()) {
             ArrayList<Situation> ceil = new ArrayList();
-            ArrayList<Situation> situationWithDotAtFrontOfCurrentTerm = getSituationWithDotAtFrontOf(this.table.get(step - 1), this.lexems.get(step - 1), -1);
+            Pair currentLexem = this.lexems.get(step - 1);
+            ArrayList<Situation> situationWithDotAtFrontOfCurrentTerm = getSituationWithDotAtFrontOf(this.table.get(step - 1), currentLexem, -1);
             for (int i = 0; i < situationWithDotAtFrontOfCurrentTerm.size(); i++) {
                 ceil.add(situationWithDotAtFrontOfCurrentTerm.get(i));
+            }
+            if (situationWithDotAtFrontOfCurrentTerm.isEmpty()) {
+                ArrayList<Pair> expected = getTermAtFrontOfDot(this.table.get(step - 1));
+                String expectedString = "{<" + expected.get(0).getType() + " " + expected.get(0).getName() + ">";
+                for (int i = 1; i < expected.size(); i++) {
+                    expectedString += ", <" + expected.get(i).getType() + " " + expected.get(i).getName() + ">";
+                }
+                expectedString += "}";
+                String error = "В строке " + currentLexem.getNumString() + " получен <" + currentLexem.getType() + " " + currentLexem.getName() + ">, а ожидалось " + expectedString;
+                throw new Exception(error);
             }
             wasAdding = true;
             while (wasAdding) {
@@ -92,19 +104,23 @@ public class SynAnalyzer {
         for (int i = 0; i < rules.size(); i++) {
             GrammarRule ruleWithDot = rules.get(i).getRuleWithDot(0);
             Situation currentSituation = new Situation(ruleWithDot, pos);
-            boolean isFound = false;
-            int j = 0;
-            while (!isFound && (j < container.size())) {
-                if (currentSituation.equals(container.get(j))) {
-                    isFound = true;
-                } else {
-                    j++;
-                }
-            }
-            if (!isFound) {
+            if (!this.isFound(currentSituation, container)) {
                 container.add(currentSituation);
             }
         }
+    }
+
+    private boolean isFound(Situation situation, ArrayList<Situation> container) {
+        boolean isFound = false;
+        int i = 0;
+        while (!isFound && (i < container.size())) {
+            if (situation.equals(container.get(i))) {
+                isFound = true;
+            } else {
+                i++;
+            }
+        }
+        return isFound;
     }
 
     //    Возвращает ситуации "с точкой на конце"
@@ -175,12 +191,41 @@ public class SynAnalyzer {
         return result;
     }
 
+//    Возвращает термин перед точкой
+    private ArrayList<Pair> getTermAtFrontOfDot(ArrayList<Situation> container) {
+        ArrayList<Pair> terms = new ArrayList();
+        for (int i = 0; i < container.size(); i++) {
+            GrammarRule rule = container.get(i).getRule();
+            int pos = rule.getPosSymbol(dot);
+            if ((pos != -1) && (pos + 1 < rule.getRight().size())) {
+                Pair current = container.get(i).getRule().getPair(pos + 1);
+                if (!current.getType().equals("nterm") && !isFound(current, terms)) {
+                    terms.add(current);
+                }
+            }
+        }
+        return terms;
+    }
+
+    private boolean isFound(Pair term, ArrayList<Pair> container) {
+        boolean isFound = false;
+        int i = 0;
+        while (!isFound && (i < container.size())) {
+            if (term.equals(container.get(i))) {
+                isFound = true;
+            } else {
+                i++;
+            }
+        }
+        return isFound;
+    }
+
     // возвращает правило
-    private GrammarRule noDots(GrammarRule rule){
+    private GrammarRule noDots(GrammarRule rule) {
         GrammarRule newRule = new GrammarRule(rule.getLeft(), null);
         ArrayList<Pair> right = new ArrayList();
-        for(int i = 0; i < rule.getRight().size(); i++){
-            if(rule.getRight().get(i).getType() != this.dot.getType()){
+        for (int i = 0; i < rule.getRight().size(); i++) {
+            if (!rule.getRight().get(i).getType().equals(this.dot.getType())) {
                 right.add(rule.getRight().get(i));
             }
         }
@@ -192,33 +237,37 @@ public class SynAnalyzer {
     private boolean findInTableByColumnAndSit(Situation situation, int column, Pair k) {
         ArrayList<Situation> tbColumn = this.table.get(column);
         boolean result = false;
-        for(int i = 0; i < tbColumn.size(); i++ ){
+
+        for (int i = 0; i < tbColumn.size(); i++) {
             GrammarRule rule = tbColumn.get(i).getRule();
-            int posDot = rule.getPosSymbol(dot)+1;
-            if (rule.getLeft().equals(situation.getRule().getLeft()) && rule.getRight().size() > posDot &&rule.getPair(posDot).equals(k) ) {
+            int posDot = rule.getPosSymbol(dot) + 1;
+            if (rule.getLeft().equals(situation.getRule().getLeft())
+                    && rule.getRight().size() > posDot
+                    && rule.getPair(posDot).equals(k)
+                    && tbColumn.get(i).getPos() == situation.getPos()) {
                 result = true;
             }
         }
         return result;
     }
+
     // процедура построения цепочки разбора
-    public void parse(){
+    public void parse() {
         int tableSize = this.table.size() - 1;
         int colSize = this.table.get(tableSize).size();
         ArrayList<Situation> tbColumn = this.table.get(tableSize);
         //последняя ситуация последнего столбца
         Situation lex = null;
         for (int i = 0; i < colSize; i++) {
-            if (tbColumn.get(i).getRule().getLeft().equals(this.grammar.getAxiom()) && tbColumn.get(i).getRule().getRight().get(tbColumn.get(i).getRule().getRight().size()-1).equals(this.dot)) {
+            if (tbColumn.get(i).getRule().getLeft().equals(this.grammar.getAxiom()) && tbColumn.get(i).getRule().getRight().get(tbColumn.get(i).getRule().getRight().size() - 1).equals(this.dot)) {
                 lex = tbColumn.get(i);
             }
         }
-
-        procedureR(lex, table.size()-1);
+        procedureR(lex, table.size() - 1);
     }
 
     // выборка верной ситуации
-    public void procedureR(Situation situation, int j){
+    private void procedureR(Situation situation, int j) {
         GrammarRule rule = noDots(situation.getRule());
         int rulnum = this.grammar.getRuleIndex(rule);
         this.parseString.add(rulnum);
@@ -226,7 +275,7 @@ public class SynAnalyzer {
         int k = m;
         int c = j;
         while (k >= 0) {
-            if (rule.getRight().get(k).getType() != "nterm") {
+            if (!rule.getRight().get(k).getType().equals("nterm")) {
                 k--;
                 c--;
             } else {
@@ -234,7 +283,8 @@ public class SynAnalyzer {
                 ArrayList<Situation> tableSt = this.table.get(c);//Ic table
                 Pair left = rule.getRight().get(k).copy();//Xk
                 //находим ситуации в Ic
-                for(int i = 0; i < tableSt.size(); i++ ){
+                for (int i = 0; i < tableSt.size(); i++) {
+
                     if (left.equals(tableSt.get(i).getRule().getLeft()) && tableSt.get(i).getRule().getPosSymbol(dot) == tableSt.get(i).getRule().getRight().size() - 1) {
                         sit.add(tableSt.get(i));
                     }
@@ -249,25 +299,35 @@ public class SynAnalyzer {
                     }
                 }
                 procedureR(rSituation, c);
-                k --;
+                k--;
                 c = r;
             }
         }
-
     }
 
-    // процедура посроения дерева разбора
+    // процедура построения дерева разбора
     public void buildTree() {
         ArrayList<Integer> numb_seq = this.parseString;
-        //    int last_item = numb_seq.size() - 1;
         int last_item = 0;
         GrammarRule root_rule = this.grammar.getRuleByIndex(numb_seq.get(last_item));
-        ParseTree tree = new ParseTree(root_rule.getLeft());
+        ParseTree tree = new ParseTree(root_rule.getLeft().copy());
         int n = walk(tree.getRoot(), numb_seq, last_item);
-        //walk(tree.getRoot(), numb_seq, last_item);
         this.parseTree = tree;
+        recursive(this.parseTree.getRoot());
     }
 
+    // процедура рекурсивного обхода дерева
+    private void recursive(TreeItem elem) {
+        if (elem.getChilds().size() != 0) {
+            ArrayList<TreeItem> childs = elem.getChilds();
+            for (int i = 0; i < childs.size(); i++) {
+                recursive(childs.get(i));
+            }
+        } else {
+            elem.getVal().setAllFields(lexems.get(current));
+            current++;
+        }
+    }
 
     // обход дерева
     private int walk(TreeItem root, ArrayList<Integer> numb_seq, Integer index) {

@@ -83,6 +83,26 @@ public class Pair {
         return copy;
     }
 
+//    Возвращает номер строки лексемы
+    public int getNumString() {
+        return this.numString;
+    }
+
+//    Установить все поля
+    public void setAllFields(Pair other) {
+        this.name = other.getName();
+        this.numString = other.getNumString();
+        this.type = other.getType();
+        this.contextType = other.getContextType();
+        this.inUse = other.getInUse();
+        this.countOfLink = other.countOfLink;
+    }
+
+//    Возвращает значение "Использовалась ли лексема"
+    public boolean getInUse() {
+        return this.inUse;
+    }
+
 //    Перегрузка метода сравнения
     @Override
     public boolean equals(Object o) {
