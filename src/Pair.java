@@ -128,4 +128,17 @@ public class Pair {
         }
         return eq;
     }
+
+    @Override
+    public String toString() {
+        if (!this.type.equals("nterm") && !this.name.isEmpty()) {
+            return this.name;
+        } else {
+            if (this.type.equals("nterm")) {
+                return "<" + this.name + ">";
+            } else {
+                return "?" + this.type + "?";
+            }
+        }
+    }
 }

@@ -38,10 +38,18 @@ public class PossibleOperation {
         }
         PossibleOperation c = (PossibleOperation) o;
         boolean eq = false;
-        if (this.operation.equals(c.operation)
-                && ((this.typeOfOperand1.equals(c.typeOfOperand1) && this.typeOfOperand2.equals(c.typeOfOperand2))
-                || (this.typeOfOperand1.equals(c.typeOfOperand2) && this.typeOfOperand2.equals(c.typeOfOperand1)))) {
-            eq = true;
+        if (c.operation.length() == 1) {
+            if (this.operation.equals(c.operation)
+                    && ((this.typeOfOperand1.equals(c.typeOfOperand1) && this.typeOfOperand2.equals(c.typeOfOperand2))
+                    || (this.typeOfOperand1.equals(c.typeOfOperand2) && this.typeOfOperand2.equals(c.typeOfOperand1)))) {
+                eq = true;
+            }
+        } else {
+            if (this.operation.equals(c.operation)
+                    && this.typeOfOperand1.equals(c.typeOfOperand1)
+                    && this.typeOfOperand2.equals(c.typeOfOperand2)) {
+                eq = true;
+            }
         }
         return eq;
     }
