@@ -1,3 +1,4 @@
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.io.PrintStream;
 
@@ -6,6 +7,7 @@ public class Main {
     public static void main(String[] args) throws UnsupportedEncodingException, Exception {
         String pascalFile = "src/program_3.txt";
         PrintStream ps = new PrintStream(System.out, false, "utf-8");
+
         LexAnalyzer pascalLexAnal = new LexAnalyzer(pascalFile);
         pascalLexAnal.makeAnalysis();
         pascalLexAnal.print();

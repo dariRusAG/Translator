@@ -276,8 +276,8 @@ public class CGrammar implements GrammarInterface {
         this.rules.add(r43);
 
         ArrayList<Pair> right44 = new ArrayList();
-        right44.add(new Pair("bracket", "("));
         right44.add(new Pair("keyword", "for"));
+        right44.add(new Pair("bracket", "("));
         right44.add(new Pair("id", ""));
         right44.add(new Pair("assignment", "="));
         right44.add(new Pair("integer", ""));

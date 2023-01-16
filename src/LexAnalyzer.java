@@ -51,7 +51,7 @@ public class LexAnalyzer {
                 this.input += " $ ";
             }
         } catch (IOException e) {
-            System.out.println("File err" + e);
+            System.out.println("File err " + e);
         }
     }
 
