@@ -38,7 +38,7 @@ public class Translator {
             this.header += "\nusing namespace std;\n\n";
         }
         String program = this.header + this.body;
-        try (FileWriter writer = new FileWriter(filename, false)) {
+        try ( FileWriter writer = new FileWriter(filename, false)) {
             writer.write(program);
             writer.flush();
         } catch (IOException ex) {
@@ -110,13 +110,22 @@ public class Translator {
                     this.body = replaceFirst(this.body, "?char?", value);
                 }
                 case "string" -> {
-                    this.body = replaceFirst(this.body, "?string?", value);
+                    this.body = replaceFirst(this.body, "?string?", value.replace("\'", "\""));
                 }
                 case "plus operator" -> {
                     this.body = replaceFirst(this.body, "?plus operator?", value);
                 }
                 case "mult operator" -> {
                     this.body = replaceFirst(this.body, "?mult operator?", value);
+                }
+                case "keyword" -> {
+                    if (value.equals("for")) {
+                        i++;
+                        value = this.lexems.get(i).getName();
+                        this.body = replaceFirst(this.body, "?id?", value);
+                        this.body = replaceFirst(this.body, "?id?", value);
+                        this.body = replaceFirst(this.body, "?id?", value);
+                    }
                 }
             }
         }
@@ -156,11 +165,20 @@ public class Translator {
         int start = 0;
         int end = 0;
         String newBody = "";
+        int counterOfTab = 0;
         for (int i = 0; i < this.body.length(); i++) {
             char current = this.body.charAt(i);
             if (current == '{' || current == '}' || current == ';') {
                 end = i;
-                newBody += this.body.substring(start, end + 1) + "\n\t";
+                if (current == '{') {
+                    counterOfTab++;
+                }
+                if (current == '}') {
+                    counterOfTab--;
+                }
+                newBody += this.body.substring(start, end + 1)
+                        + "\n"
+                        + "    ".repeat(counterOfTab);
                 start = end + 2;
             }
         }
