@@ -386,4 +386,14 @@ public class SynAnalyzer {
             }
         }
     }
+
+//    Печать цепочки разбора
+    public void printParse() throws UnsupportedEncodingException {
+        PrintStream ps = new PrintStream(System.out, false, "utf-8");
+        for (int i = 0; i < this.parseString.size(); i++) {
+            ps.print(this.parseString.get(i));
+            ps.print(" ");
+        }
+        ps.println();
+    }
 }
