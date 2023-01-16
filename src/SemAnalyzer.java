@@ -91,21 +91,33 @@ public class SemAnalyzer {
             String operation = childs.get(1).getVal().getName();
             String operand1 = execExpression(childs.get(0).getChilds());
             String operand2 = execExpression(childs.get(2).getChilds());
-            return this.repository.getReturnType(operation, operand1, operand2);
+            try {
+                return this.repository.getReturnType(operation, operand1, operand2);
+            } catch (Exception e) {
+                throw new Exception(e.getMessage()
+                        + " в строке "
+                        + childs.get(1).getVal().getNumString());
+            }
         }
         if ((parent.equals("выражение") || parent.equals("операнд T")) && childs.size() == 1) {
             return execExpression(childs.get(0).getChilds());
         }
         if (parent.equals("операнд F") && childs.size() == 1) {
             Pair atom = childs.get(0).getVal();
-            return switch (atom.getType()) {
-                case "nterm" ->
-                        "boolean";
-                case "id" ->
-                        getTypeOfVariable(atom.getName());
-                default ->
-                        atom.getType();
-            };
+            try {
+                return switch (atom.getType()) {
+                    case "nterm" ->
+                            "boolean";
+                    case "id" ->
+                            getTypeOfVariable(atom.getName());
+                    default ->
+                            atom.getType();
+                };
+            } catch (Exception e) {
+                throw new Exception(e.getMessage()
+                        + " в строке "
+                        + atom.getNumString());
+            }
         }
         if (parent.equals("операнд F") && childs.size() > 1) {
             if (childs.get(0).getVal().getType().equals("bracket")) {
@@ -113,7 +125,13 @@ public class SemAnalyzer {
             } else {
                 String operation = childs.get(0).getChilds().get(0).getVal().getName();
                 String opearand = execExpression(childs.get(2).getChilds());
-                return this.repository.getReturnType(operation, opearand);
+                try {
+                    return this.repository.getReturnType(operation, opearand);
+                } catch (Exception e) {
+                    throw new Exception(e.getMessage()
+                            + " в строке "
+                            + childs.get(0).getChilds().get(0).getVal().getNumString());
+                }
             }
         }
         return "true";
@@ -146,7 +164,7 @@ public class SemAnalyzer {
         }
     }
 
-//    функция, возвращающая контекстный тип переменной, проверка на то, была ли переменная объявлена/проинциализирована
+//    функция, возвращающая контекстный тип переменной, проверка на то была ли переменная объявлена/проинциализирована
     private String getTypeOfVariable(String name) throws Exception {
         String type = "";
         int i = 0;
@@ -160,7 +178,8 @@ public class SemAnalyzer {
         if (type.isEmpty()) {
             throw new Exception("Использована необъявленная переменная \'"
                     + name
-                    + "\'");
+                    + "\'"
+            );
         }
         if (this.tableOfName.get(i).getContextValue().isEmpty()) {
             throw new Exception("Использована непроинициализированная переменная \'"
@@ -184,13 +203,15 @@ public class SemAnalyzer {
         return isFind;
     }
 
-    //    проверка длины для переменной типа string
+//    проверка длины для переменной типа string
     private void validationString() throws Exception {
         for (Pair elem : this.tableOfName) {
             if (elem.getContextType().equals("string") && elem.getContextValue().length() > this.MAX_LENGTH_STRING) {
                 throw new Exception("Недопустимая длина строки в переменной \'"
                         + elem.getName()
-                        + "\'. Получена строка длинной "
+                        + "\' в строке "
+                        + elem.getNumString()
+                        + ". Получена строка длинной "
                         + elem.getContextValue().length()
                         + ", а ожидалась < "
                         + this.MAX_LENGTH_STRING);
@@ -198,7 +219,7 @@ public class SemAnalyzer {
         }
     }
 
-    // возвращает полное выражение
+//    возвращает полное выражение
     private String collectExpression(ArrayList<TreeItem> childs) {
         String result = "";
         int i = 0;
@@ -228,6 +249,7 @@ public class SemAnalyzer {
                     case "id" -> {
                         if (isInit(current.getVal())) {
                             scope.add(findByName(current.getVal().getName()));
+                            scope.get(scope.size() - 1).setNumString(current.getVal().getNumString());
                         } else {
                             throw new Exception("Использована необъявленная переменная \'"
                                     + current.getVal().getName()
@@ -238,7 +260,12 @@ public class SemAnalyzer {
                     case "assignment" -> {
                         String typeVar = scope.get(scope.size() - 1).getContextType();
                         i++;
-                        String typeExpression = execExpression(current.getParent().getParent().getChilds().get(2).getChilds());
+                        String typeExpression = "";
+                        if (current.getParent().getVal().getName().equals("знак присваивания")) {
+                            typeExpression = execExpression(current.getParent().getParent().getChilds().get(2).getChilds());
+                        } else {
+                            typeExpression = current.getParent().getChilds().get(3).getVal().getType();
+                        }
                         if (current.getVal().getName().equals(":=")) {
                             if (!((typeVar.equals("real") && typeExpression.equals("integer"))
                                     || (typeVar.equals("string") && typeExpression.equals("char"))
@@ -252,13 +279,24 @@ public class SemAnalyzer {
                                         + " к "
                                         + typeExpression);
                             } else {
-                                String contextValue = collectExpression(current.getParent().getParent().getChilds().get(2).getChilds());
+                                String contextValue = "";
+                                if (current.getParent().getVal().getName().equals("знак присваивания")) {
+                                    contextValue = collectExpression(current.getParent().getParent().getChilds().get(2).getChilds());
+                                } else {
+                                    contextValue = current.getParent().getChilds().get(3).getVal().getName();
+                                }
                                 scope.get(scope.size() - 1).setContextValue(contextValue);
                                 findByName(scope.get(scope.size() - 1).getName()).setContextValue(contextValue);
                             }
                         } else {
                             String operation = current.getVal().getName();
-                            typeExpression = this.repository.getReturnType(operation, typeVar, typeExpression);
+                            try {
+                                typeExpression = this.repository.getReturnType(operation, typeVar, typeExpression);
+                            } catch (Exception e) {
+                                throw new Exception(e.getMessage()
+                                        + " в строке "
+                                        + current.getVal().getNumString());
+                            }
                             if (!((typeVar.equals("real") && typeExpression.equals("integer"))
                                     || (typeVar.equals("string") && typeExpression.equals("char"))
                                     || typeVar.equals(typeExpression))) {
@@ -283,7 +321,13 @@ public class SemAnalyzer {
                         String operation = current.getVal().getName();
                         String operandType1 = execExpression(childs.get(i - 1).getChilds());
                         String operandType2 = execExpression(childs.get(i + 1).getChilds());
-                        this.repository.getReturnType(operation, operandType1, operandType2);
+                        try {
+                            this.repository.getReturnType(operation, operandType1, operandType2);
+                        } catch (Exception e) {
+                            throw new Exception(e.getMessage()
+                                    + " в строке "
+                                    + current.getVal().getNumString());
+                        }
                         i++;
                     }
                 }
@@ -309,7 +353,7 @@ public class SemAnalyzer {
         return isFind;
     }
 
-    //    возвращает лексему по имени
+//    возвращает лексему по имени
     private Pair findByName(String name) {
         boolean isFind = false;
         int i = 0;
@@ -331,8 +375,10 @@ public class SemAnalyzer {
         while (i < childs.size()) {
             TreeItem current = childs.get(i);
             switch (current.getVal().getType()) {
-                case "id" -> findByName(current.getVal().getName()).setContextValue("user_value");
-                default -> setUserValue(current.getChilds());
+                case "id" ->
+                        findByName(current.getVal().getName()).setContextValue("user_value");
+                default ->
+                        setUserValue(current.getChilds());
             }
             i++;
         }

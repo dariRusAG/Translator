@@ -53,6 +53,11 @@ public class Pair {
         this.countOfLink = count;
     }
 
+//    Процедура установки номера строки лексемы
+    public void setNumString(int value) {
+        this.numString = value;
+    }
+
 //    Возвращает type Pair
     public String getType(){
         return this.type;

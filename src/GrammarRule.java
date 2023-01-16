@@ -11,7 +11,6 @@ public class GrammarRule {
     // Конструктор правила
     GrammarRule(Pair left, ArrayList<Pair> right) {
         this.left = left;
-        this.right = new ArrayList();
         this.right = right;
     }
 
@@ -102,21 +101,5 @@ public class GrammarRule {
     // процедура установки правой части правила
     public void setRight(ArrayList<Pair> list){
         this.right = list;
-    }
-
-    // функция, проверяющая на равенство правых частей правил
-    public boolean rightEquals(ArrayList<Pair> pairs) {
-        boolean r = true;
-        if (this.right.size() == pairs.size()) {
-            for (int i = 0; i < pairs.size(); i++) {
-                if (pairs.get(i).equals(this.right.get(i)) == false) {
-                    r = false;
-                }
-            }
-            return r;
-        } else {
-            r = false;
-        }
-        return r;
     }
 }
