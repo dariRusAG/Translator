@@ -16,3 +16,14 @@
 - *src/SemAnalyzer - класс семантического анализатора*
 - *src/Translator - класс транслятор из Pascal в C++*
 - *src/Main - класс приложения транслятора Pascal - C++*
+
+## Допустимые Pascal лексемы
+- Типы данных: integer, real, char, string, boolean
+- Арифметические операторы: +, -, *, /
+- Логические операторы: >, <, <=, >=, <>, =
+- Встроенные функции: abs, sqr, sqrt, exp
+- Встроенные процедуры: write, writeln, readln
+- Операторы присваивания: :=, +=, -=, *=, /=
+- Циклы: for to, for downto, while do, repeat until
+- Ветвления: case of else
+- Условный оператор: if then else, if then
