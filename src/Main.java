@@ -4,7 +4,7 @@ import java.io.PrintStream;
 public class Main {
 
     public static void main(String[] args) throws UnsupportedEncodingException, Exception {
-        String pascalFile = "";
+        String pascalFile = "tests/advancedTests/test_43.pas";
         PrintStream ps = new PrintStream(System.out, false, "utf-8");
         LexAnalyzer pascalLexAnal = new LexAnalyzer(pascalFile);
         try {
