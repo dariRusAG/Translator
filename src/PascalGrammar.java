@@ -309,10 +309,10 @@ public class PascalGrammar implements GrammarInterface {
 
         ArrayList<Pair> right49 = new ArrayList();
         right49.add(new Pair("keyword", "while"));
-        right49.add(new Pair("keyword", "do"));
         right49.add(new Pair("bracket", "("));
         right49.add(new Pair("nterm", "булево выражение"));
         right49.add(new Pair("bracket", ")"));
+        right49.add(new Pair("keyword", "do"));
         right49.add(new Pair("nterm", "составной оператор"));
         right49.add(new Pair("separator", ";"));
         GrammarRule r50 = new GrammarRule(new Pair("nterm", "цикл while"), right49);
