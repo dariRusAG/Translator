@@ -3,8 +3,8 @@
 ## Запуск Докера
 
 ```json
-docker build - t java-docker 
-docker run java-docker
+  docker build - t java-docker 
+  docker run java-docker
 ```
 
 ## Проект данных
