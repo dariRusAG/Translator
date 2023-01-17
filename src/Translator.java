@@ -2,10 +2,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
-// Класс траслятор из Pascal в C++
+// Класс транслятора из Pascal в C++
 public class Translator {
-
-    private final GrammarInterface grammar;
+    private final GrammarInterface outputGrammar;
+    private final GrammarInterface inputGrammar;
     private ArrayList<Integer> parseString;
     private ArrayList<Pair> lexems;
     private String body = "";
@@ -21,10 +21,47 @@ public class Translator {
     };
 
 //    Конструктор класса, принимающий на вход грамматику, список разбора и список лексем
-    Translator(GrammarInterface grammar, ArrayList<Integer> parseString, ArrayList<Pair> lexems) {
-        this.grammar = grammar;
-        this.parseString = parseString;
+    Translator(GrammarInterface outputGrammar, GrammarInterface inputGrammar, ParseTree tree, ArrayList<Pair> lexems) {
+        this.outputGrammar = outputGrammar;
+        this.inputGrammar = inputGrammar;
+        this.parseString = getParse(tree.getRoot().getChilds());
+        this.parseString.add(0, 0);
         this.lexems = lexems;
+    }
+
+    private ArrayList<Integer> getParse(ArrayList<TreeItem> childs) {
+        ArrayList<Integer> parseString = new ArrayList();
+        int index = childs.size() - 1;
+        for (int i = index; i >= 0; i--) {
+            if (childs.get(i).getVal().getType().equals("nterm")) {
+                ArrayList<GrammarRule> possibleRules = inputGrammar.getRules(childs.get(i).getVal());
+                if (possibleRules.size() == 1) {
+                    parseString.add(inputGrammar.getRuleIndex(possibleRules.get(0)));
+                } else {
+                    int j = 0;
+                    boolean isFind = false;
+                    while (!isFind && j < possibleRules.size()) {
+                        ArrayList<Pair> right = possibleRules.get(j).getRight();
+                        ArrayList<TreeItem> downLvl = childs.get(i).getChilds();
+                        if (downLvl.size() == right.size()) {
+                            boolean isOk = true;
+                            for (int k = 0; k < childs.get(i).getChilds().size(); k++) {
+                                if (!downLvl.get(k).getVal().equals(right.get(k))) {
+                                    isOk = false;
+                                }
+                            }
+                            isFind = isOk;
+                            if (isFind) {
+                                parseString.add(inputGrammar.getRuleIndex(possibleRules.get(j)));
+                            }
+                        }
+                        j++;
+                    }
+                }
+                parseString.addAll(getParse(childs.get(i).getChilds()));
+            }
+        }
+        return parseString;
     }
 
 //    процедура транслирования, результат записывается в файл filename
@@ -49,7 +86,7 @@ public class Translator {
     private void prepare() {
         int stash = 0;
         for (int i = 0; i < this.parseString.size(); i++) {
-            GrammarRule current = this.grammar.getRuleByIndex(parseString.get(i));
+            GrammarRule current = this.outputGrammar.getRuleByIndex(parseString.get(i));
             String right = "";
             right = current.getRight().stream().map(pair -> pair.toString() + " ").reduce(right, String::concat);
             String left = current.getLeft().toString();
@@ -60,7 +97,7 @@ public class Translator {
                     stash = parseString.get(i);
                 } else {
                     if (stash != 0 && this.type.contains(parseString.get(i))) {
-                        GrammarRule typeRule = this.grammar.getRuleByIndex(stash);
+                        GrammarRule typeRule = this.outputGrammar.getRuleByIndex(stash);
                         right = "";
                         right = typeRule.getRight().stream().map(pair -> pair.toString() + " ").reduce(right, String::concat);
                         left = typeRule.getLeft().toString();
@@ -75,7 +112,7 @@ public class Translator {
             }
         }
         if (stash != 0) {
-            GrammarRule typeRule = this.grammar.getRuleByIndex(stash);
+            GrammarRule typeRule = this.outputGrammar.getRuleByIndex(stash);
             String right = "";
             right = typeRule.getRight().stream().map(pair -> pair.toString() + " ").reduce(right, String::concat);
             String left = typeRule.getLeft().toString();
