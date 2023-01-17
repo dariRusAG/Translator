@@ -1,5 +1,8 @@
 # Translator Pascal-CPlusPlus
 
+## Запуск Докера
+docker build - t java-docker 
+docker run java-docker
 ## Проект данных
 - *src/LexAnalyzer - класс лексического анализатора Pascal*<br>
 - *src/Pair - класс лексемы - пара <name, value>*
