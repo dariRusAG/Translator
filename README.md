@@ -3,7 +3,7 @@
 ## Запуск Докера
 
 ```
-  docker build --tag javadocker
+  docker build . --tag javadocker
   docker run --rm -it javadocker
 ```
 
