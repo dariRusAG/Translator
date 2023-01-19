@@ -5,7 +5,7 @@ public class Main {
 
     public static void main(String[] args) throws UnsupportedEncodingException, Exception {
 //        Для расширенных тестов
-        String pascalFile = "src/tests/advancedTests/test_1.pas";
+        String pascalFile = "tests/advancedTests/test_1.pas";
 
 //        Для кратких тестов
 //        String pascalFile = "src/tests/shortTests/test_1.pas";
