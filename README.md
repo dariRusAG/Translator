@@ -4,7 +4,7 @@
 
 ```
   docker build . --tag javadocker
-  docker run --rm -it javadocker
+  docker run -v ${PWD}/src:/app --rm -it javadocker
 ```
 
 ## Проект данных

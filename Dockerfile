@@ -1,5 +1,3 @@
 FROM openjdk:19
-ADD src .
-VOLUME javadocker
-RUN javac Main.java
-CMD ["java", "Main"]
+ADD run.sh .
+CMD ["sh", "run.sh"]
