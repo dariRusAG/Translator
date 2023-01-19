@@ -5,10 +5,10 @@ public class Main {
 
     public static void main(String[] args) throws UnsupportedEncodingException, Exception {
 //        Для расширенных тестов
-        String pascalFile = "tests/advancedTests/test_1.pas";
+        //String pascalFile = "tests/advancedTests/test_1.pas";
 
 //        Для кратких тестов
-//        String pascalFile = "src/tests/shortTests/test_1.pas";
+        String pascalFile = "src/tests/shortTests/correct_test_5.pas";
 
         PrintStream ps = new PrintStream(System.out, false, "utf-8");
         LexAnalyzer pascalLexAnal = new LexAnalyzer(pascalFile);

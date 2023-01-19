@@ -195,6 +195,13 @@ public class Translator {
                 start = this.body.indexOf("cout", end);
             }
         }
+
+        start = this.body.indexOf("string");
+        if (start != -1) {
+            if (this.header.isEmpty()) {
+                this.header += "#include <iostream> \n";
+            }
+        }
     }
 
     private void formatCode() {
