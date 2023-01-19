@@ -3,8 +3,8 @@
 ## Запуск Докера
 
 ```
-  docker build --tag java-docker 
-  docker run -t java-docker
+  docker build --tag javadocker
+  docker run --rm -it javadocker
 ```
 
 ## Проект данных
