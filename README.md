@@ -26,19 +26,19 @@
 - *src/Main* - класс приложения транслятора Pascal - C++
 
 ## Допустимые Pascal лексемы
-- Типы данных: integer, real, char, string, boolean
-- Арифметические операторы: +, -, *, /
-- Логические операторы: >, <, <=, >=, <>, =
-- Встроенные функции: abs, sqr, sqrt, exp
-- Встроенные процедуры: write, writeln, readln
-- Операторы присваивания: :=, +=, -=, *=, /=
-- Циклы: for to, for downto, while do, repeat until
-- Ветвления: case of else
-- Условный оператор: if then else, if then
+- *Типы данных:* integer, real, char, string, boolean
+- *Арифметические операторы:* +, -, *, /
+- *Логические операторы:* >, <, <=, >=, <>, =
+- *Встроенные функции:* abs, sqr, sqrt, exp
+- *Встроенные процедуры:* write, writeln, readln
+- *Операторы присваивания:* :=, +=, -=, *=, /=
+- *Циклы:* for to, for downto, while do, repeat until
+- *Ветвления:* case of else
+- *Условный оператор:* if then else, if then
 
   ## Тестирование
-- [Краткие тесты](https://github.com/dariRusAG/Translator/raw/master/DOCS/Краткие%20тесты.docx)
-- [Расширенные тесты](https://github.com/dariRusAG/Translator/raw/master/DOCS/Расширенные%20тесты.docx)
+1. [Краткие тесты](https://github.com/dariRusAG/Translator/raw/master/DOCS/Краткие%20тесты.docx)
+2. [Расширенные тесты](https://github.com/dariRusAG/Translator/raw/master/DOCS/Расширенные%20тесты.docx)
 
   ## Источники
 1. http://pascalabc.net/downloads/pabcnethelp/index.html
