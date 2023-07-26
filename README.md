@@ -37,9 +37,9 @@
 - Условный оператор: if then else, if then
 
   ## Тестирование
-- [Краткие тесты](DOCS/Краткие тесты.docx)
-- [Расширенные тесты](DOCS/Расширенные тесты.docx)
+- ![Краткие тесты](DOCS/Краткие тесты.docx)
+- ![Расширенные тесты](DOCS/Расширенные тесты.docx)
 
   ## Источники
-  - http://pascalabc.net/downloads/pabcnethelp/index.html
-  - https://e.lanbook.com/book/1298
+1. http://pascalabc.net/downloads/pabcnethelp/index.html
+2. https://e.lanbook.com/book/1298
